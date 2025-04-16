@@ -9,5 +9,4 @@ if __name__ == "__main__":
     if os.path.exists(sys.argv[1]) is False:
         sys.stderr.write("Missing " + sys.argv[1] + "\n")
         exit(1)
-
-exit(0)
+    exit(0)
