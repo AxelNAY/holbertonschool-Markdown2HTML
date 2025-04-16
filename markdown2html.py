@@ -25,7 +25,8 @@ if __name__ == "__main__":
             heading_count = length - len(headings)
 
             if 1 <= heading_count <= 6:
-                line = '<h{}>'.format(heading_count) + headings.strip() + '</h{}>\n'.format(heading_count)
+                line = '<h{}>'.format(heading_count)
+                + headings.strip() + '</h{}>\n'.format(heading_count)
 
             file.write(line)
 
