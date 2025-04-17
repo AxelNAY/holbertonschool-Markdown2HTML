@@ -18,7 +18,7 @@ if __name__ == "__main__":
     with open('README.md', 'r') as file:
         lines = file.readlines()
 
-    with open('README.md', 'w') as file:
+    with open('README.html', 'w') as file:
         for line in lines:
             length = len(line)
             headings = line.lstrip('#')
