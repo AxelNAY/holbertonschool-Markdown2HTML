@@ -38,6 +38,9 @@ if __name__ == "__main__":
                     file.write('<ul>\n')
                     list_status = True
                 line = '<li>' + unorder_list.strip() + '</li>\n'
+            if list_status and not list_count:
+                file.write('</ul>\n')
+                list_status = False
 
             file.write(line)
             line_prec = line
