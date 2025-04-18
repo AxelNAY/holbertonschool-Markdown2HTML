@@ -19,16 +19,29 @@ if __name__ == "__main__":
         lines = file.readlines()
 
     with open(sys.argv[2], 'w') as file:
+        list_status = False
+        line_prec = None
         for line in lines:
             length = len(line)
             headings = line.lstrip('#')
             heading_count = length - len(headings)
+            unorder_list = line.lstrip('-')
+            list_count = length - len(unorder_list)
 
             if 1 <= heading_count <= 6:
                 line = '<h{}>'.format(
                     heading_count) + headings.strip(
                     ) + '</h{}>\n'.format(heading_count)
 
+            if list_count:
+                if not list_status:
+                    file.write('<ul>\n')
+                    list_status = True
+                line = '<li>' + unorder_list.strip() + '</li>\n'
+
             file.write(line)
+            line_prec = line
+        if list_count:
+            file.write('</ul>\n')
 
     exit(0)
