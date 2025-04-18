@@ -42,6 +42,6 @@ if __name__ == "__main__":
             file.write(line)
             line_prec = line
         if list_count:
-            file.write('</ul>\n')
+            file.write('</ul>')
 
     exit(0)
