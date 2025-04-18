@@ -15,10 +15,10 @@ if __name__ == "__main__":
         sys.stderr.write("Missing " + sys.argv[1] + "\n")
         exit(1)
 
-    with open('README.md', 'r') as file:
+    with open(sys.argv[1], 'r') as file:
         lines = file.readlines()
 
-    with open('README.html', 'w') as file:
+    with open(sys.argv[2], 'w') as file:
         for line in lines:
             length = len(line)
             headings = line.lstrip('#')
