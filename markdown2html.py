@@ -5,7 +5,13 @@ First argument is the name of the Markdown file
 Second argument is the output file name"""
 
 import os
+import re
 import sys
+
+def format_text(text):
+    text = re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', text)
+    text = re.sub(r'__(.+?)__', r'<em>\1</em>', text)
+    return text
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
@@ -32,6 +38,10 @@ if __name__ == "__main__":
             unorder_count = length - len(unorder_list)
             order_list = line.lstrip('*')
             order_count = length - len(order_list)
+            bold = line.lstrip('**')
+            bold_count = length - len(bold)
+            italic = line.lstrip('__')
+            italic_count = length - len(italic)
 
             is_text_line = (
                 stripped != "" and
@@ -49,7 +59,8 @@ if __name__ == "__main__":
                 if not unorder_status:
                     file.write('<ul>\n')
                     unorder_status = True
-                line = '<li>' + unorder_list.strip() + '</li>\n'
+                content = format_text(unorder_list.strip())
+                line = f'<li>{content}</li>\n'
             elif unorder_status and not unorder_count:
                 file.write('</ul>\n')
                 unorder_status = False
@@ -58,7 +69,8 @@ if __name__ == "__main__":
                 if not order_status:
                     file.write('<ol>\n')
                     order_status = True
-                line = '<li>' + order_list.strip() + '</li>\n'
+                content = format_text(unorder_list.strip())
+                line = f'<li>{content}</li>\n'
             elif order_status and not order_count:
                 file.write('</ol>\n')
                 order_status = False
@@ -67,8 +79,11 @@ if __name__ == "__main__":
                 if not text_status:
                     file.write('<p>\n')
                     text_status = True
+                content = format_text(unorder_list.strip())
+                line = f'{content}\n'
                 if line_prec.strip() != "":
                     file.write('<br/>\n')
+                
             elif text_status and stripped == "":
                 file.write('</p>\n')
                 text_status = False
