@@ -32,8 +32,13 @@ if __name__ == "__main__":
             unorder_count = length - len(unorder_list)
             order_list = line.lstrip('*')
             order_count = length - len(order_list)
-            text = line.lstrip('^[a-zA-Z]')
-            text_count = line.lstrip('^[a-zA-Z]')
+
+            is_text_line = (
+                stripped != "" and
+                heading_count == 0 and
+                unorder_count == 0 and
+                order_count == 0
+            )
 
             if 1 <= heading_count <= 6:
                 line = '<h{}>'.format(
@@ -57,25 +62,25 @@ if __name__ == "__main__":
             elif order_status and not order_count:
                 file.write('</ol>\n')
                 order_status = False
-            
-            elif text_count and not heading_count and not unorder_count and not order_count and stripped != "":
+
+            elif is_text_line:
                 if not text_status:
                     file.write('<p>\n')
                     text_status = True
                 if line_prec.strip() != "":
                     file.write('<br/>\n')
-            elif text_status and not text_count or stripped == "":
+            elif text_status and stripped == "":
                 file.write('</p>\n')
                 text_status = False
-            
+
             if stripped != "":
                 file.write(line)
             line_prec = line
-        if unorder_count:
+        if unorder_status:
             file.write('</ul>\n')
-        if order_count:
+        if order_status:
             file.write('</ol>\n')
-        if text_count:
+        if text_status:
             file.write('</p>\n')
 
     exit(0)
