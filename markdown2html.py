@@ -89,10 +89,10 @@ if __name__ == "__main__":
                 line = f'{content}\n'
                 if line_prec.strip() != "":
                     file.write('<br/>\n')
-
             elif text_status and stripped == "":
                 file.write('</p>\n')
                 text_status = False
+                line = ""
 
             if stripped != "":
                 file.write(line)
