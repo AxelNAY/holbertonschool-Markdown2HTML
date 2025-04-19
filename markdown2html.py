@@ -8,10 +8,12 @@ import os
 import re
 import sys
 
+
 def format_text(text):
     text = re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', text)
     text = re.sub(r'__(.+?)__', r'<em>\1</em>', text)
     return text
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
@@ -83,7 +85,7 @@ if __name__ == "__main__":
                 line = f'{content}\n'
                 if line_prec.strip() != "":
                     file.write('<br/>\n')
-                
+
             elif text_status and stripped == "":
                 file.write('</p>\n')
                 text_status = False
