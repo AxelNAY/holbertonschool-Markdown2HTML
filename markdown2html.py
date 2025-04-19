@@ -57,6 +57,10 @@ if __name__ == "__main__":
                     heading_count) + headings.strip(
                     ) + '</h{}>\n'.format(heading_count)
 
+            elif bold_count or italic_count:
+                content = format_text(line)
+                line = f'{content}\n'
+
             elif unorder_count:
                 if not unorder_status:
                     file.write('<ul>\n')
