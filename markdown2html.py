@@ -58,7 +58,7 @@ if __name__ == "__main__":
                     ) + '</h{}>\n'.format(heading_count)
 
             elif bold_count or italic_count:
-                content = format_text(line)
+                content = format_text(stripped)
                 line = f'{content}\n'
 
             elif unorder_count:

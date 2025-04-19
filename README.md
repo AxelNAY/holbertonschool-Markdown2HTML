@@ -8,3 +8,5 @@ I'm **a** text
 with __2 lines__
 
 **Or in bold**
+
+__italic__
