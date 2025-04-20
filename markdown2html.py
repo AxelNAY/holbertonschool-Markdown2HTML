@@ -10,98 +10,98 @@ import sys
 
 
 def format_text(text):
+    """Markdown for bold and italic"""
     text = re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', text)
     text = re.sub(r'__(.+?)__', r'<em>\1</em>', text)
     return text
 
 
-if __name__ == "__main__":
-    if len(sys.argv) < 3:
-        sys.stderr.write("Usage: ./markdown2html.py README.md README.html\n")
-        exit(1)
-    if not os.path.exists(sys.argv[1]):
-        sys.stderr.write("Missing " + sys.argv[1] + "\n")
-        exit(1)
-
-    with open(sys.argv[1], 'r') as file:
+def process_markdown(input_file, output_file):
+    """Generate markdown html in the new file"""
+    with open(input_file, 'r') as file:
         lines = file.readlines()
 
-    with open(sys.argv[2], 'w') as file:
-        unorder_status = False
-        order_status = False
-        text_status = False
-        line_prec = None
+    with open(output_file, 'w') as file:
+        in_unordered_list = False
+        in_ordered_list = False
+        in_paragraph = False
+        previous_line = ""
+
         for line in lines:
-            length = len(line)
             stripped = line.strip()
-            headings = line.lstrip('#')
-            heading_count = length - len(headings)
-            unorder_list = line.lstrip('-')
-            unorder_count = length - len(unorder_list)
-            order_list = line.lstrip('*')
-            order_count = length - len(order_list)
-            bold = line.lstrip('**')
-            bold_count = length - len(bold)
-            italic = line.lstrip('__')
-            italic_count = length - len(italic)
 
-            is_text_line = (
-                stripped != "" and
-                heading_count == 0 and
-                unorder_count == 0 and
-                order_count == 0
-            )
+            heading_match = re.match(r'^(#{1,6})\s+(.+)$', stripped)
+            unordered_match = re.match(r'^-\s+(.+)$', stripped)
+            ordered_match = re.match(r'^\*\s+(.+)$', stripped)
 
-            if 1 <= heading_count <= 6:
-                line = '<h{}>'.format(
-                    heading_count) + headings.strip(
-                    ) + '</h{}>\n'.format(heading_count)
+            if heading_match:
+                level = len(heading_match.group(1))
+                content = format_text(heading_match.group(2))
+                file.write(f'<h{level}>{content}</h{level}>\n')
 
-            elif bold_count or italic_count:
-                content = format_text(stripped)
-                line = f'{content}\n'
-
-            elif unorder_count:
-                if not unorder_status:
+            elif unordered_match:
+                if not in_unordered_list:
                     file.write('<ul>\n')
-                    unorder_status = True
-                content = format_text(unorder_list.strip())
-                line = f'<li>{content}</li>\n'
-            elif unorder_status and not unorder_count:
-                file.write('</ul>\n')
-                unorder_status = False
+                    in_unordered_list = True
+                content = format_text(unordered_match.group(1))
+                file.write(f'<li>{content}</li>\n')
 
-            elif order_count:
-                if not order_status:
+            elif ordered_match:
+                if not in_ordered_list:
                     file.write('<ol>\n')
-                    order_status = True
-                content = format_text(unorder_list.strip())
-                line = f'<li>{content}</li>\n'
-            elif order_status and not order_count:
-                file.write('</ol>\n')
-                order_status = False
+                    in_ordered_list = True
+                content = format_text(ordered_match.group(1))
+                file.write(f'<li>{content}</li>\n')
 
-            elif is_text_line:
-                if not text_status:
+            elif stripped == "":
+                if in_unordered_list:
+                    file.write('</ul>\n')
+                    in_unordered_list = False
+                if in_ordered_list:
+                    file.write('</ol>\n')
+                    in_ordered_list = False
+                if in_paragraph:
+                    file.write('</p>\n')
+                    in_paragraph = False
+
+            else:
+                content = format_text(stripped)
+
+                if not in_paragraph:
                     file.write('<p>\n')
-                    text_status = True
-                content = format_text(unorder_list.strip())
-                line = f'{content}\n'
-                if line_prec.strip() != "":
-                    file.write('<br/>\n')
-            elif text_status and stripped == "":
-                file.write('</p>\n')
-                text_status = False
-                line = ""
+                    in_paragraph = True
 
-            if stripped != "":
-                file.write(line)
-            line_prec = line
-        if unorder_status:
+                elif previous_line and previous_line.strip() != "":
+                    file.write('<br/>\n')
+
+                file.write(f'{content}\n')
+
+            previous_line = line
+
+        if in_unordered_list:
             file.write('</ul>\n')
-        if order_status:
+        if in_ordered_list:
             file.write('</ol>\n')
-        if text_status:
+        if in_paragraph:
             file.write('</p>\n')
 
-    exit(0)
+
+def main():
+    """Main function"""
+    if len(sys.argv) < 3:
+        sys.stderr.write("Usage: ./markdown2html.py README.md README.html\n")
+        return 1
+
+    input_file = sys.argv[1]
+    output_file = sys.argv[2]
+
+    if not os.path.exists(input_file):
+        sys.stderr.write(f"Missing {input_file}\n")
+        return 1
+
+    process_markdown(input_file, output_file)
+    return 0
+
+
+if __name__ == "__main__":
+    exit(main())
