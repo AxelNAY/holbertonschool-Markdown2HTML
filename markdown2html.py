@@ -4,6 +4,7 @@
 First argument is the name of the Markdown file
 Second argument is the output file name"""
 
+import hashlib
 import os
 import re
 import sys
@@ -13,6 +14,10 @@ def format_text(text):
     """Markdown for bold and italic"""
     text = re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', text)
     text = re.sub(r'__(.+?)__', r'<em>\1</em>', text)
+    text = re.sub(r'\[\[(.+?)\]\]',
+                  lambda m: hashlib.md5(m.group(1).encode()).hexdigest(), text)
+    text = re.sub(r'\(\((.+?)\)\)',
+                  lambda m: re.sub(r'[cC]', '', m.group(1)), text)
     return text
 
 
